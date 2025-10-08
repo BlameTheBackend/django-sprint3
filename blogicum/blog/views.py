@@ -1,8 +1,9 @@
-from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from blog.models import Category, Post
+
+MAX_NUMBER_OF_POSTS = 5
 
 
 def index(request):
@@ -10,7 +11,7 @@ def index(request):
         pub_date__lte=timezone.now(),
         is_published=True,
         category__is_published=True
-    )[:5]
+    )[:MAX_NUMBER_OF_POSTS]
     context = {
         'post_list': post_list,
     }
@@ -20,8 +21,9 @@ def index(request):
 def post_detail(request, post_id):
     post = get_object_or_404(
         Post.objects.filter(
-            Q(pub_date__lte=timezone.now())
-            & (Q(is_published=True) & Q(category__is_published=True))
+            pub_date__lte=timezone.now(),
+            is_published=True,
+            category__is_published=True
         ),
         pk=post_id
     )
